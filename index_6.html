@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plano de Ação — Pedro Leônidas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-dark:      #0D1117;
+    --bg-surface:   #111814;
+    --bg-elevated:  #162019;
+    --green-bright: #4ADE80;
+    --green-mid:    #22C55E;
+    --green-muted:  #1D9E75;
+    --green-dark:   #085041;
+    --green-border: #1E3A28;
+    --green-label:  #3A6644;
+    --gold:         #C9A84C;
+    --gold-light:   #F0C96E;
+    --text-primary:   #F0F0EC;
+    --text-secondary: #C5C5BE;
+    --text-muted:     #5A6A5E;
+    --danger:  #EF4444;
+    --warning: #F59E0B;
+    --info:    #63B3ED;
+    --purple:  #C084FC;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    background: var(--bg-dark);
+    color: var(--text-secondary);
+    max-width: 780px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ── PASSWORD OVERLAY ── */
+  #overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #080D0A;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 0;
+  }
+  .pw-box {
+    width: 100%; max-width: 380px;
+    padding: 48px 40px;
+    background: #0D1117;
+    border: 0.5px solid #1E3A28;
+    border-radius: 16px;
+    text-align: center;
+  }
+  .pw-brand {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: #3A6644; margin-bottom: 28px; font-weight: 500;
+  }
+  .pw-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px; color: #F0F0EC; margin-bottom: 6px; font-weight: 400;
+  }
+  .pw-sub { font-size: 13px; color: #5A6A5E; margin-bottom: 28px; line-height: 1.6; }
+  .pw-input {
+    width: 100%; padding: 13px 16px;
+    background: #111814; border: 0.5px solid #1E3A28;
+    border-radius: 8px; color: #F0F0EC;
+    font-family: 'DM Mono', monospace; font-size: 15px;
+    text-align: center; letter-spacing: 0.12em;
+    outline: none; margin-bottom: 12px;
+    transition: border-color .2s;
+  }
+  .pw-input:focus { border-color: #4ADE80; }
+  .pw-input.error { border-color: #EF4444; animation: shake .3s; }
+  @keyframes shake {
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-6px);}
+    75%{transform:translateX(6px);}
+  }
+  .pw-btn {
+    width: 100%; padding: 13px;
+    background: rgba(34,197,94,0.1); border: 0.5px solid #1E3A28;
+    border-radius: 8px; color: #4ADE80;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all .2s; letter-spacing: 0.02em;
+  }
+  .pw-btn:hover { background: rgba(34,197,94,0.18); border-color: #4ADE80; }
+  .pw-err { font-size: 12px; color: #EF4444; margin-top: 10px; min-height: 18px; }
+
+  /* ── MAIN (hidden until unlocked) ── */
+  #main { display: none; }
+
+  /* ── BRAND TAG ── */
+  .brand-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--green-bright);
+    border: 0.5px solid var(--green-border); padding: 5px 12px;
+    border-radius: 20px; background: rgba(34,197,94,0.06);
+    margin-bottom: 28px;
+  }
+  .brand-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green-bright); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+
+  /* ── COVER ── */
+  .cover {
+    background: var(--bg-dark);
+    border-bottom: 1px solid var(--green-border);
+    padding: 52px 40px 44px;
+    position: relative; overflow: hidden;
+  }
+  .cover::before {
+    content: ''; position: absolute; top: -80px; right: -80px;
+    width: 320px; height: 320px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(34,197,94,0.09) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover::after {
+    content: ''; position: absolute; bottom: -60px; left: 30px;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover-eyebrow {
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 20px; font-weight: 500;
+  }
+  .cover-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 40px; font-weight: 400; color: var(--text-primary);
+    margin: 0 0 6px; line-height: 1.1;
+  }
+  .cover-date { font-size: 13px; color: var(--text-muted); margin-bottom: 32px; }
+  .cover-quote {
+    font-family: 'DM Serif Display', serif; font-style: italic;
+    font-size: 17px; color: var(--green-bright); line-height: 1.6;
+    border-left: 2px solid var(--green-border); padding-left: 20px;
+    max-width: 520px;
+  }
+  .cover-meta {
+    margin-top: 36px; display: flex; gap: 32px; flex-wrap: wrap;
+  }
+  .cover-meta-item { display: flex; flex-direction: column; gap: 3px; }
+  .cover-meta-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+  .cover-meta-val { font-size: 14px; color: var(--text-primary); font-weight: 500; }
+
+  /* ── SECTION ── */
+  .section { padding: 40px 40px; border-bottom: 1px solid #141C16; }
+  .section-label {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--green-label);
+    display: flex; align-items: center; gap: 10px; margin-bottom: 24px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 0.5px; background: #1A2C1E; }
+  .section-title {
+    font-family: 'DM Serif Display', serif; font-size: 24px;
+    color: var(--text-primary); margin: 0 0 8px; font-weight: 400;
+  }
+  .section-subtitle { font-size: 14px; color: var(--text-muted); margin: 0 0 32px; line-height: 1.7; }
+
+  /* ── SNAPSHOT GRID ── */
+  .snap-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 28px; }
+  .snap-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  @media(min-width: 560px){ .snap-grid-4 { grid-template-columns: repeat(4, 1fr); } }
+  .snap-card { border-radius: 10px; padding: 18px; }
+  .snap-card.green { background: rgba(34,197,94,0.07); border: 0.5px solid var(--green-border); }
+  .snap-card.gold  { background: rgba(201,168,76,0.07); border: 0.5px solid rgba(201,168,76,0.2); }
+  .snap-card.red   { background: rgba(239,68,68,0.06); border: 0.5px solid rgba(239,68,68,0.2); }
+  .snap-card.blue  { background: rgba(99,179,237,0.06); border: 0.5px solid rgba(99,179,237,0.2); }
+  .snap-val { font-family: 'DM Mono', monospace; font-size: 22px; color: var(--green-bright); margin-bottom: 4px; }
+  .snap-val.gold { color: var(--gold-light); }
+  .snap-val.red  { color: var(--danger); }
+  .snap-val.blue { color: var(--info); }
+  .snap-lbl { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+  /* ── DIAGNOSTIC GRID ── */
+  .diag-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+  .diag-item { background: var(--bg-surface); border: 0.5px solid #1A2C1E; border-radius: 10px; padding: 16px; }
+  .diag-label { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green-label); margin-bottom: 6px; }
+  .diag-val { font-size: 14px; color: var(--text-primary); font-weight: 500; line-height: 1.4; }
+  .diag-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  /* ── ALERT BOX ── */
+  .alert-box { border-radius: 10px; padding: 18px 20px; display: flex; gap: 14px; margin-bottom: 20px; }
+  .alert-box.danger  { background: rgba(239,68,68,0.06);  border: 0.5px solid rgba(239,68,68,0.2); }
+  .alert-box.info    { background: rgba(99,179,237,0.06); border: 0.5px solid rgba(99,179,237,0.2); }
+  .alert-box.warning { background: rgba(245,158,11,0.06); border: 0.5px solid rgba(245,158,11,0.2); }
+  .alert-icon { font-size: 16px; margin-top: 2px; flex-shrink: 0; }
+  .alert-content { flex: 1; }
+  .alert-title { font-size: 13px; font-weight: 500; margin: 0 0 4px; }
+  .alert-box.danger  .alert-title { color: var(--danger); }
+  .alert-box.info    .alert-title { color: var(--info); }
+  .alert-box.warning .alert-title { color: var(--warning); }
+  .alert-text { font-size: 13px; line-height: 1.65; margin: 0; color: #8A9A8E; }
+
+  /* ── PHASE CARDS ── */
+  .phase-list { display: flex; flex-direction: column; gap: 0; }
+  .phase-item {
+    display: flex; gap: 20px; padding: 24px 0;
+    border-bottom: 0.5px solid #141C16; align-items: flex-start;
+  }
+  .phase-item:last-child { border-bottom: none; }
+  .phase-badge {
+    flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 500;
+  }
+  .phase-badge.active { background: rgba(34,197,94,0.12); border: 0.5px solid var(--green-border); color: var(--green-bright); }
+  .phase-badge.next   { background: rgba(99,179,237,0.08); border: 0.5px solid rgba(99,179,237,0.2); color: var(--info); }
+  .phase-badge.future { background: rgba(192,132,252,0.08); border: 0.5px solid rgba(192,132,252,0.2); color: #C084FC; }
+  .phase-body { flex: 1; }
+  .phase-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+  .phase-title { font-size: 15px; font-weight: 500; color: var(--text-primary); }
+  .phase-tag { font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 4px; letter-spacing: 0.04em; }
+  .phase-tag.agora { background: rgba(34,197,94,0.1); color: var(--green-bright); }
+  .phase-tag.curto { background: rgba(99,179,237,0.1); color: var(--info); }
+  .phase-tag.longo { background: rgba(192,132,252,0.1); color: #C084FC; }
+  .phase-desc { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+  .phase-detail {
+    margin-top: 10px; background: var(--bg-surface);
+    border: 0.5px solid #1A2C1E; border-radius: 8px; padding: 12px 14px;
+  }
+  .phase-detail-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+  .phase-detail-row:not(:last-child) { border-bottom: 0.5px solid #141C16; }
+  .phase-detail-key { font-size: 12px; color: var(--text-muted); }
+  .phase-detail-val { font-size: 12px; color: var(--text-primary); font-weight: 500; font-family: 'DM Mono', monospace; }
+
+  /* ── ACTION ITEM ── */
+  .action-item { display: flex; gap: 14px; padding: 20px 0; border-bottom: 0.5px solid #141C16; }
+  .action-item:last-child { border-bottom: none; }
+  .action-num {
+    width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(34,197,94,0.08); border: 0.5px solid var(--green-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 500; color: var(--green-bright);
+  }
+  .action-what { font-size: 14px; font-weight: 500; color: #E8E8E4; margin: 0 0 5px; }
+  .action-why  { font-size: 13px; color: #4A6050; margin: 0 0 8px; line-height: 1.6; }
+  .action-footer { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .action-when { font-size: 11px; color: var(--green-label); font-weight: 500; }
+  .action-pill { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 4px; }
+  .action-pill.strat { background: rgba(34,197,94,0.08); color: var(--green-bright); border: 0.5px solid var(--green-border); }
+  .action-pill.prod  { background: rgba(99,179,237,0.08); color: var(--info); border: 0.5px solid rgba(99,179,237,0.2); }
+  .action-pill.prot  { background: rgba(239,68,68,0.08); color: var(--danger); border: 0.5px solid rgba(239,68,68,0.2); }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap { margin-bottom: 20px; }
+  .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .progress-name { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+  .progress-pct  { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--text-muted); }
+  .progress-bar-bg   { height: 5px; background: #1A2C1E; border-radius: 99px; overflow: hidden; margin-bottom: 5px; }
+  .progress-bar-fill { height: 100%; border-radius: 99px; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+  .progress-bar-fill.g { background: var(--green-mid); }
+  .progress-bar-fill.b { background: var(--info); }
+  .progress-bar-fill.p { background: #C084FC; }
+  .progress-bar-fill.w { background: var(--warning); }
+  .progress-meta { font-size: 11px; color: var(--text-muted); }
+
+  /* ── CHART ── */
+  .chart-wrap { background: var(--bg-surface); border: 0.5px solid #1A2C1E; border-radius: 12px; padding: 24px; margin-top: 8px; }
+  .chart-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+  .chart-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text-primary); }
+  .chart-premise { font-size: 11px; color: var(--text-muted); line-height: 1.6; text-align: right; max-width: 220px; }
+  canvas { max-height: 280px; }
+
+  /* ── SIMULATOR ── */
+  .simulator { background: var(--bg-surface); border: 0.5px solid var(--green-border); border-radius: 12px; padding: 24px; margin-top: 24px; }
+  .sim-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text-primary); margin-bottom: 6px; }
+  .sim-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+  .sim-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .sim-field { flex: 1; min-width: 140px; }
+  .sim-label { font-size: 11px; color: var(--green-label); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
+  .sim-slider { width: 100%; -webkit-appearance: none; height: 4px; border-radius: 99px; background: #1A2C1E; outline: none; }
+  .sim-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--green-bright); cursor: pointer; }
+  .sim-val { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text-primary); margin-top: 6px; }
+  .sim-result { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .sim-res-card { background: var(--bg-elevated); border: 0.5px solid #1A2C1E; border-radius: 8px; padding: 14px; }
+  .sim-res-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .sim-res-val { font-family: 'DM Mono', monospace; font-size: 16px; color: var(--green-bright); font-weight: 400; }
+
+  /* ── COMPARISON ── */
+  .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+  .cmp-card { border-radius: 10px; padding: 20px; }
+  .cmp-card.bad  { background: rgba(239,68,68,0.05); border: 0.5px solid rgba(239,68,68,0.18); }
+  .cmp-card.good { background: rgba(34,197,94,0.05); border: 0.5px solid rgba(34,197,94,0.18); }
+  .cmp-header { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; font-weight: 500; }
+  .cmp-card.bad  .cmp-header { color: var(--danger); }
+  .cmp-card.good .cmp-header { color: var(--green-bright); }
+  .cmp-item { font-size: 13px; color: var(--text-muted); padding: 6px 0; border-bottom: 0.5px solid rgba(255,255,255,0.03); line-height: 1.5; }
+  .cmp-item:last-child { border-bottom: none; }
+
+  /* ── CLOSING ── */
+  .closing {
+    background: #0A100C; padding: 48px 40px;
+    text-align: center; border-top: 1px solid #1A2C1E;
+  }
+  .closing-quote {
+    font-family: 'DM Serif Display', serif; font-style: italic;
+    font-size: 20px; color: var(--text-secondary); line-height: 1.7;
+    max-width: 500px; margin: 0 auto 28px;
+  }
+  .closing-quote em { color: var(--green-bright); font-style: normal; }
+  .closing-sig { font-size: 13px; color: var(--text-muted); margin-bottom: 32px; }
+  .cta-btn {
+    display: inline-block; padding: 14px 28px;
+    background: rgba(34,197,94,0.08); border: 0.5px solid var(--green-border);
+    border-radius: 8px; color: var(--green-bright); font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all .2s; letter-spacing: 0.02em;
+    text-decoration: none; font-family: 'DM Sans', sans-serif;
+  }
+  .cta-btn:hover { background: rgba(34,197,94,0.14); border-color: var(--green-bright); }
+  .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .fade-in { opacity: 0; transform: translateY(16px); transition: opacity .5s ease, transform .5s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media(max-width: 600px) {
+    .cover, .section, .closing { padding-left: 24px; padding-right: 24px; }
+    .diag-grid, .comparison { grid-template-columns: 1fr; }
+    .snap-grid { grid-template-columns: 1fr 1fr; }
+    .sim-result { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ PASSWORD OVERLAY ══════════════════════ -->
+<div id="overlay">
+  <div class="pw-box">
+    <p class="pw-brand">Grão · Grupo Primo · CFP®</p>
+    <h2 class="pw-title">Plano de Ação</h2>
+    <p class="pw-sub">Este documento é pessoal e confidencial.<br>Insira a senha para acessar.</p>
+    <input type="password" class="pw-input" id="pwInput" placeholder="••••••••••" maxlength="20">
+    <button class="pw-btn" onclick="checkPassword()">Acessar</button>
+    <p class="pw-err" id="pwErr"></p>
+  </div>
+</div>
+
+<!-- ══════════════════════ MAIN CONTENT ══════════════════════ -->
+<div id="main">
+
+<!-- CAPA -->
+<div class="cover">
+  <div class="brand-tag"><span class="brand-dot"></span> Grão · Grupo Primo</div>
+  <p class="cover-eyebrow">Planejamento Financeiro Pessoal · Metodologia CFP®</p>
+  <h1 class="cover-name">Pedro Leônidas</h1>
+  <p class="cover-date">Plano de Ação Inicial · Junho de 2026</p>
+  <p class="cover-quote">
+    Você já faz a parte difícil: trabalha, cuida da família e vive longe de casa. Agora é hora de fazer o seu dinheiro trabalhar junto com você.
+  </p>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">Renda líquida</span>
+      <span class="cover-meta-val">£ 2.700 / mês</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">Capacidade de investir</span>
+      <span class="cover-meta-val">£ 695 / mês</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">Planejador</span>
+      <span class="cover-meta-val">Matheus Melo</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">Objetivo final</span>
+      <span class="cover-meta-val">Liberdade aos 65 anos</span>
+    </div>
+  </div>
+</div>
+
+<!-- 01 DIAGNÓSTICO -->
+<div class="section fade-in">
+  <p class="section-label">01 · Diagnóstico</p>
+  <h2 class="section-title">O ponto de partida</h2>
+  <p class="section-subtitle">Retrato fiel da sua situação hoje, baseado nas nossas três reuniões e no formulário preenchido.</p>
+
+  <div class="diag-grid">
+    <div class="diag-item">
+      <div class="diag-label">Situação fiscal</div>
+      <div class="diag-val">Não residente no Brasil</div>
+      <div class="diag-sub">Saída fiscal realizada — conta C6 como não residente</div>
+    </div>
+    <div class="diag-item">
+      <div class="diag-label">Experiência com investimentos</div>
+      <div class="diag-val">Nenhum ativo atualmente</div>
+      <div class="diag-sub">Teoria sólida — prática começa agora</div>
+    </div>
+    <div class="diag-item">
+      <div class="diag-label">Dívidas</div>
+      <div class="diag-val">Zero dívidas</div>
+      <div class="diag-sub">Fatura do cartão em dia — ponto de partida limpo</div>
+    </div>
+    <div class="diag-item">
+      <div class="diag-label">Reserva de emergência</div>
+      <div class="diag-val">Não constituída ainda</div>
+      <div class="diag-sub">Meta: £ 12.300 · Construção iniciando agora</div>
+    </div>
+    <div class="diag-item">
+      <div class="diag-label">Proteção de renda</div>
+      <div class="diag-val">Sem cobertura ativa</div>
+      <div class="diag-sub">Seguro de vida/invalidez: próximo passo urgente</div>
+    </div>
+    <div class="diag-item">
+      <div class="diag-label">Visto de trabalho</div>
+      <div class="diag-val">Válido até 2029</div>
+      <div class="diag-sub">Renovado · vinculado ao emprego na universidade</div>
+    </div>
+  </div>
+
+  <div class="alert-box danger">
+    <span class="alert-icon">⚠️</span>
+    <div class="alert-content">
+      <p class="alert-title">Risco principal identificado</p>
+      <p class="alert-text">Você não tem proteção de renda caso fique impossibilitado de trabalhar. Com a irmã dependendo do seu apoio, esse é o maior risco financeiro real da sua vida hoje — e o primeiro movimento do plano é corrigir isso.</p>
+    </div>
+  </div>
+
+  <div class="alert-box info">
+    <span class="alert-icon">✦</span>
+    <div class="alert-content">
+      <p class="alert-title">Ponto positivo de partida</p>
+      <p class="alert-text">Zero dívidas, £ 695 disponíveis mensalmente e separação intuitiva das contas (Revolut para custos, Wise como reserva). Você já pensa como planejador — faltava só o método.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 02 ORÇAMENTO -->
+<div class="section fade-in">
+  <p class="section-label">02 · Orçamento</p>
+  <h2 class="section-title">Como o seu dinheiro está distribuído</h2>
+  <p class="section-subtitle">Mapa mensal das suas finanças em Liverpool. Valores em libras esterlinas (£).</p>
+
+  <div class="snap-grid snap-grid-4">
+    <div class="snap-card green">
+      <div class="snap-val">£ 2.700</div>
+      <div class="snap-lbl">Renda líquida mensal</div>
+    </div>
+    <div class="snap-card red">
+      <div class="snap-val red">£ 1.870</div>
+      <div class="snap-lbl">Despesas fixas totais</div>
+    </div>
+    <div class="snap-card blue">
+      <div class="snap-val blue">£ 115</div>
+      <div class="snap-lbl">Despesas variáveis est.</div>
+    </div>
+    <div class="snap-card gold">
+      <div class="snap-val gold">£ 695</div>
+      <div class="snap-lbl">Capacidade de investir</div>
+    </div>
+  </div>
+
+  <div class="diag-grid" style="margin-bottom:20px;">
+    <div class="diag-item">
+      <div class="diag-label">Maior custo fixo</div>
+      <div class="diag-val">Aluguel · £ 570</div>
+      <div class="diag-sub">31% da renda — dentro do limite saudável</div>
+    </div>
+    <div class="diag-item">
+      <div class="diag-label">Segundo maior custo</div>
+      <div class="diag-val">Alimentação · £ 600</div>
+      <div class="diag-sub">Marmitas — estratégia eficiente</div>
+    </div>
+    <div class="diag-item">
+      <div class="diag-label">Apoio familiar mensal</div>
+      <div class="diag-val">£ 200 — irmã</div>
+      <div class="diag-sub">Comprometimento voluntário · parte do orçamento</div>
+    </div>
+    <div class="diag-item">
+      <div class="diag-label">Custo de remessas (estimado)</div>
+      <div class="diag-val">~ £ 10 por envio</div>
+      <div class="diag-sub">Oportunidade de otimização — em análise</div>
+    </div>
+  </div>
+
+  <div class="alert-box warning">
+    <span class="alert-icon">💡</span>
+    <div class="alert-content">
+      <p class="alert-title">Premissa analítica</p>
+      <p class="alert-text">Os £ 695 de sobra são uma média. Meses de viagem ao Brasil alteram esse número. O acompanhamento no DashPlan vai revelar a realidade ao longo dos próximos meses — no seu ritmo.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 03 OBJETIVOS -->
+<div class="section fade-in">
+  <p class="section-label">03 · Objetivos & Projetos</p>
+  <h2 class="section-title">Para onde você está indo</h2>
+  <p class="section-subtitle">Cada objetivo tem um horizonte e uma lógica de alocação. Esse é o mapa completo dos seus projetos.</p>
+
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span class="progress-name">🇧🇷 Viagem ao Brasil — Setembro 2026</span>
+      <span class="progress-pct">R$ 15.000</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill g" style="width:9%"></div></div>
+    <div class="progress-meta">Início do acúmulo · Prazo: ~3 meses</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span class="progress-name">🇧🇷 Viagem ao Brasil — Dezembro 2026 / Janeiro 2027</span>
+      <span class="progress-pct">R$ 25.000</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill b" style="width:5%"></div></div>
+    <div class="progress-meta">Início do acúmulo · ✔ Passagens já adquiridas</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span class="progress-name">💑 Visita da namorada — Abril 2027</span>
+      <span class="progress-pct">£ 1.000</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill g" style="width:100%"></div></div>
+    <div class="progress-meta">✔ Coberto com o saldo disponível</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span class="progress-name">🛡️ Reserva de emergência</span>
+      <span class="progress-pct">£ 12.300</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill w" style="width:5%"></div></div>
+    <div class="progress-meta">6 meses de despesas · Conta Wise · Construção gradual em paralelo</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span class="progress-name">🏦 Independência Financeira</span>
+      <span class="progress-pct">R$ 4.000.000 aos 65 anos</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill p" style="width:2%"></div></div>
+    <div class="progress-meta">Renda passiva alvo: R$ 20.000 / mês · Horizonte: 29 anos</div>
+  </div>
+</div>
+
+<!-- 04 PLANO CFP -->
+<div class="section fade-in">
+  <p class="section-label">04 · Plano de Ação CFP</p>
+  <h2 class="section-title">As quatro fases da sua jornada</h2>
+  <p class="section-subtitle">Metodologia CFP® estruturada em pilares sequenciais. Cada fase tem lógica, prazo e produto definidos.</p>
+
+  <div class="phase-list">
+
+    <div class="phase-item">
+      <div class="phase-badge active">1</div>
+      <div class="phase-body">
+        <div class="phase-header">
+          <span class="phase-title">Proteção: construir o escudo primeiro</span>
+          <span class="phase-tag agora">Agora · Prioridade 1</span>
+        </div>
+        <p class="phase-desc">Antes de qualquer investimento, você precisa estar protegido. Se ficasse alguns meses sem trabalhar, não teria renda nem reserva suficiente para manter seus compromissos — incluindo o apoio à irmã. Esse é o risco real número 1 da sua vida financeira hoje.</p>
+        <div class="phase-detail">
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">O que fazer</span>
+            <span class="phase-detail-val">Contratar seguro de vida / invalidez</span>
+          </div>
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Onde</span>
+            <span class="phase-detail-val">Reino Unido ou Brasil — em análise com especialista</span>
+          </div>
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Atenção especial</span>
+            <span class="phase-detail-val">Visto de trabalho atrelado ao emprego — verificar cobertura</span>
+          </div>
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Custo estimado</span>
+            <span class="phase-detail-val">£ 15 – 30 / mês (a confirmar)</span>
+          </div>
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Prazo</span>
+            <span class="phase-detail-val">Próximas 4 semanas</span>
+          </div>
+        </div>
+        <div class="alert-box warning" style="margin-top:14px;margin-bottom:0;">
+          <span class="alert-icon">📋</span>
+          <div class="alert-content">
+            <p class="alert-title">Plano de saúde</p>
+            <p class="alert-text">O plano atual está vinculado ao CNPJ da ex-sogra — pode ser encerrado sem aviso. Não é urgente agora, mas vamos monitorar. Se mudar algo, agimos rápido.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-item">
+      <div class="phase-badge active">2</div>
+      <div class="phase-body">
+        <div class="phase-header">
+          <span class="phase-title">Reserva de emergência em libras</span>
+          <span class="phase-tag agora">Agora · Prioridade 2</span>
+        </div>
+        <p class="phase-desc">A reserva garante que você nunca tome decisões financeiras ruins sob pressão. Fica na conta Wise — acessível, rendendo, na sua moeda local.</p>
+        <div class="phase-detail">
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Meta</span>
+            <span class="phase-detail-val">£ 12.300 (6 meses de despesas)</span>
+          </div>
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Onde manter</span>
+            <span class="phase-detail-val">Conta Wise — liquidez imediata + rendimento</span>
+          </div>
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Prazo estimado</span>
+            <span class="phase-detail-val">12 a 18 meses (em paralelo com projetos)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-item">
+      <div class="phase-badge next">3</div>
+      <div class="phase-body">
+        <div class="phase-header">
+          <span class="phase-title">Projetos de vida: viagens e namorada</span>
+          <span class="phase-tag curto">Curto prazo</span>
+        </div>
+        <p class="phase-desc">Envelopes separados para cada projeto — sem misturar com a reserva. As 170k milhas acumuladas (C6 + Smiles + Livelo + Avios) podem reduzir significativamente o custo das passagens.</p>
+        <div class="phase-detail">
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Set/26</span>
+            <span class="phase-detail-val">R$ 15.000 · Acumular R$ 5.000/mês (3 meses)</span>
+          </div>
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Dez/26</span>
+            <span class="phase-detail-val">R$ 25.000 · ✔ Passagens já adquiridas</span>
+          </div>
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Abr/27</span>
+            <span class="phase-detail-val">£ 1.000 · Visita da namorada · Já coberto</span>
+          </div>
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Milhas totais</span>
+            <span class="phase-detail-val">~170.000 pontos em 4 programas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-item">
+      <div class="phase-badge future">4</div>
+      <div class="phase-body">
+        <div class="phase-header">
+          <span class="phase-title">Independência financeira: investir para o futuro</span>
+          <span class="phase-tag longo">Longo prazo</span>
+        </div>
+        <p class="phase-desc">Com reserva constituída e proteção ativa, começa a construção patrimonial. Iniciamos pelo C6 com renda fixa e liquidez — priorizando previsibilidade agora. Diversificação em FIIs e ações virá na sequência.</p>
+        <div class="phase-detail">
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Meta de patrimônio</span>
+            <span class="phase-detail-val">R$ 4.000.000 corrigidos pela inflação</span>
+          </div>
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Renda passiva alvo</span>
+            <span class="phase-detail-val">R$ 20.000 / mês aos 65 anos</span>
+          </div>
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Perfil de risco inicial</span>
+            <span class="phase-detail-val">Conservador · validar no suitability C6</span>
+          </div>
+          <div class="phase-detail-row">
+            <span class="phase-detail-key">Onde começar</span>
+            <span class="phase-detail-val">C6 Bank · Renda fixa com liquidez diária</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 05 ANÁLISE -->
+<div class="section fade-in">
+  <p class="section-label">05 · Análise Estratégica</p>
+  <h2 class="section-title">O custo de não fazer nada</h2>
+  <p class="section-subtitle">Você tem £ 695 disponíveis por mês. A pergunta não é "vou investir?" — é "esse dinheiro vai trabalhar por mim ou vai evaporar?"</p>
+
+  <div class="comparison">
+    <div class="cmp-card bad">
+      <div class="cmp-header">❌ Sem planejamento</div>
+      <div class="cmp-item">Dinheiro parado em conta corrente (rendimento zero)</div>
+      <div class="cmp-item">Sem proteção em caso de imprevisto</div>
+      <div class="cmp-item">Projetos dependendo do momento</div>
+      <div class="cmp-item">Patrimônio próximo de zero em 29 anos</div>
+      <div class="cmp-item">Dependência do salário indefinidamente</div>
+    </div>
+    <div class="cmp-card good">
+      <div class="cmp-header">✅ Com planejamento</div>
+      <div class="cmp-item">£ 695/mês rendendo 4% a.a. real por 29 anos</div>
+      <div class="cmp-item">Seguro ativo — família protegida</div>
+      <div class="cmp-item">Projetos financiados com envelopes dedicados</div>
+      <div class="cmp-item">Patrimônio estimado: R$ 4M+</div>
+      <div class="cmp-item">Liberdade financeira aos 65 anos</div>
+    </div>
+  </div>
+</div>
+
+<!-- 06 PROJEÇÃO -->
+<div class="section fade-in">
+  <p class="section-label">06 · Projeção Futura</p>
+  <h2 class="section-title">A curva do seu patrimônio</h2>
+  <p class="section-subtitle">Projeção com aporte de R$ 3.500/mês (equivalente a ~£ 695), taxa de 4% a.a. real, dos 36 aos 65 anos.</p>
+
+  <div class="chart-wrap">
+    <div class="chart-title-row">
+      <span class="chart-title">Evolução patrimonial estimada</span>
+      <span class="chart-premise">4% a.a. real · R$ 3.500/mês<br>Dos 36 aos 65 anos</span>
+    </div>
+    <canvas id="chartPatrimonio"></canvas>
+  </div>
+
+  <div class="simulator">
+    <div class="sim-title">Simulador de independência</div>
+    <div class="sim-sub">Ajuste os parâmetros e veja como o seu patrimônio muda ao longo do tempo.</div>
+    <div class="sim-row">
+      <div class="sim-field">
+        <div class="sim-label">Aporte mensal (R$)</div>
+        <input type="range" class="sim-slider" id="sliderAporte" min="1000" max="8000" step="500" value="3500">
+        <div class="sim-val" id="valAporte">R$ 3.500</div>
+      </div>
+      <div class="sim-field">
+        <div class="sim-label">Taxa real a.a. (%)</div>
+        <input type="range" class="sim-slider" id="sliderTaxa" min="2" max="8" step="0.5" value="4">
+        <div class="sim-val" id="valTaxa">4,0% a.a.</div>
+      </div>
+      <div class="sim-field">
+        <div class="sim-label">Horizonte (anos)</div>
+        <input type="range" class="sim-slider" id="sliderAnos" min="10" max="35" step="1" value="29">
+        <div class="sim-val" id="valAnos">29 anos</div>
+      </div>
+    </div>
+    <div class="sim-result">
+      <div class="sim-res-card">
+        <div class="sim-res-label">Patrimônio final</div>
+        <div class="sim-res-val" id="resPatrimonio">R$ 4,08M</div>
+      </div>
+      <div class="sim-res-card">
+        <div class="sim-res-label">Renda passiva / mês</div>
+        <div class="sim-res-val" id="resRenda">R$ 11.900</div>
+      </div>
+      <div class="sim-res-card">
+        <div class="sim-res-label">Total investido</div>
+        <div class="sim-res-val" id="resInvestido">R$ 1,22M</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 07 PRÓXIMOS PASSOS -->
+<div class="section fade-in">
+  <p class="section-label">07 · Próximos Passos</p>
+  <h2 class="section-title">O que acontece agora</h2>
+  <p class="section-subtitle">Cinco ações concretas, em ordem de prioridade. Cada uma com o porquê e o prazo.</p>
+
+  <div>
+    <div class="action-item">
+      <div class="action-num">1</div>
+      <div>
+        <p class="action-what">Pesquisar e contratar seguro de vida e invalidez</p>
+        <p class="action-why">Com a irmã dependendo do seu apoio, ficar sem renda por alguns meses pode criar uma crise financeira real. Um seguro de £ 15–30/mês resolve o maior risco da sua vida hoje. Pesquise indicações no seu ambiente de trabalho — a universidade é um bom ponto de partida.</p>
+        <div class="action-footer">
+          <span class="action-when">📅 Próximas 4 semanas</span>
+          <span class="action-pill prot">Proteção</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-item">
+      <div class="action-num">2</div>
+      <div>
+        <p class="action-what">Me avisar quando o dinheiro estiver disponível para o primeiro investimento</p>
+        <p class="action-why">Não há pressa — o movimento certo na hora certa vale mais do que a urgência. Quando o valor estiver separado e disponível na sua conta, é só me avisar e eu oriento onde alocar para ter liquidez imediata e já começar a render.</p>
+        <div class="action-footer">
+          <span class="action-when">📅 Quando encaixar no seu fluxo</span>
+          <span class="action-pill strat">Estratégia</span>
+          <span class="action-pill prod">Produto</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-item">
+      <div class="action-num">3</div>
+      <div>
+        <p class="action-what">Monitorar câmbio e otimizar remessas internacionais</p>
+        <p class="action-why">Estou pesquisando plataformas com custo menor do que os ~£ 10 atuais por envio. Tenho um caso de cliente na Irlanda pagando o equivalente a £ 3 por remessa — vou verificar se a mesma condição se aplica para Liverpool e te aviso. Vou também monitorar o câmbio libra/real e te comunicar quando houver uma janela favorável para envio.</p>
+        <div class="action-footer">
+          <span class="action-when">📅 Em análise — te aviso em breve</span>
+          <span class="action-pill strat">Estratégia</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-item">
+      <div class="action-num">4</div>
+      <div>
+        <p class="action-what">Me comunicar sobre o resultado da promoção em julho</p>
+        <p class="action-why">Se a promoção for aprovada, sua capacidade de investimento aumenta e revisamos o plano juntos. Se não sair agora, seguimos com o plano atual — sem impacto na estratégia.</p>
+        <div class="action-footer">
+          <span class="action-when">📅 Julho de 2026</span>
+          <span class="action-pill strat">Planejamento</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CLOSING -->
+<div class="closing">
+  <p class="closing-quote">
+    Investir é importante. Mas os maiores retornos da vida não aparecem em planilha. Passar o Natal com a família, criar memórias com quem você ama — isso também faz parte do plano.
+  </p>
+  <p class="closing-sig">Matheus Melo · Planejador Financeiro CFP® · Grão | Grupo Primo</p>
+  <div class="cta-row">
+    <button class="cta-btn" onclick="window.open('https://wa.me/5599991756837','_blank')">Falar com Matheus</button>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ── PASSWORD ──
+function initChart() {
+  const ages = [], patrimonioData = [];
+  let acum = 0;
+  for(let i=0; i<=29; i++){
+    ages.push(36 + i);
+    acum = acum * 1.04 + 3500 * 12;
+    patrimonioData.push(Math.round(acum));
+  }
+  const ctx = document.getElementById('chartPatrimonio').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ages,
+      datasets: [{
+        data: patrimonioData,
+        borderColor: '#22C55E',
+        backgroundColor: 'rgba(34,197,94,0.06)',
+        borderWidth: 2, fill: true, tension: 0.4,
+        pointRadius: 0, pointHoverRadius: 5,
+        pointHoverBackgroundColor: '#4ADE80',
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#111814', borderColor: '#1E3A28', borderWidth: 1,
+          titleColor: '#4ADE80', bodyColor: '#C5C5BE',
+          callbacks: {
+            title: c => `Aos ${c[0].label} anos`,
+            label: c => { const v=c.raw; return v>=1e6?` R$ ${(v/1e6).toFixed(2)}M`:` R$ ${(v/1e3).toFixed(0)}k`; }
+          }
+        }
+      },
+      scales: {
+        x: { grid:{color:'rgba(30,58,40,0.3)'}, ticks:{color:'#3A6644',font:{size:11},maxTicksLimit:8} },
+        y: { grid:{color:'rgba(30,58,40,0.3)'}, ticks:{color:'#3A6644',font:{size:11},callback:v=>v>=1e6?`R$ ${(v/1e6).toFixed(1)}M`:`R$ ${(v/1e3).toFixed(0)}k`} }
+      }
+    }
+  });
+
+  function fmt(v){ if(v>=1e6)return`R$ ${(v/1e6).toFixed(2)}M`; if(v>=1e3)return`R$ ${(v/1e3).toFixed(0)}k`; return`R$ ${Math.round(v)}`; }
+  function calcular(a,t,h){ let p=0,inv=a*12*h; for(let i=0;i<h;i++) p=p*(1+t)+a*12; return{p,r:p*0.035/12,inv}; }
+  function updateSim(){
+    const a=parseInt(document.getElementById('sliderAporte').value);
+    const t=parseFloat(document.getElementById('sliderTaxa').value)/100;
+    const h=parseInt(document.getElementById('sliderAnos').value);
+    document.getElementById('valAporte').textContent=`R$ ${a.toLocaleString('pt-BR')}`;
+    document.getElementById('valTaxa').textContent=`${(t*100).toFixed(1).replace('.',',')}% a.a.`;
+    document.getElementById('valAnos').textContent=`${h} anos`;
+    const r=calcular(a,t,h);
+    document.getElementById('resPatrimonio').textContent=fmt(r.p);
+    document.getElementById('resRenda').textContent=fmt(r.r);
+    document.getElementById('resInvestido').textContent=fmt(r.inv);
+    const nl=[],nd=[]; let ac2=0;
+    for(let i=0;i<=h;i++){nl.push(36+i);ac2=ac2*(1+t)+a*12;nd.push(Math.round(ac2));}
+    chart.data.labels=nl; chart.data.datasets[0].data=nd; chart.update();
+  }
+  ['sliderAporte','sliderTaxa','sliderAnos'].forEach(id=>document.getElementById(id).addEventListener('input',updateSim));
+  updateSim();
+}
+
+function unlock() {
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('main').style.display = 'block';
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+  setTimeout(initChart, 300);
+}
+
+function checkPassword() {
+  const input = document.getElementById('pwInput');
+  const err = document.getElementById('pwErr');
+  if(input.value === 'pedro2026') {
+    unlock();
+  } else {
+    input.classList.add('error');
+    err.textContent = 'Senha incorreta. Tente novamente.';
+    setTimeout(() => { input.classList.remove('error'); input.value = ''; }, 800);
+  }
+}
+
+document.getElementById('pwInput').addEventListener('keydown', function(e) {
+  if(e.key === 'Enter') checkPassword();
+  document.getElementById('pwErr').textContent = '';
+  this.classList.remove('error');
+});
+</script>
+</body>
+</html>
